@@ -27,7 +27,15 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Enable CORS
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Ping route for health check
+app.get('/api/v1/ping', (req, res) => res.status(200).json({ status: 'ok', message: 'pong' }));
 
 // Mount routers
 app.use('/api/v1/auth', auth);
