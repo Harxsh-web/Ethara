@@ -8,6 +8,9 @@ const errorHandler = require('./middleware/error');
 // Load env vars
 dotenv.config();
 
+console.log('[DEBUG] MONGO_URI Status:', process.env.MONGO_URI ? 'DEFINED' : 'UNDEFINED');
+console.log('[DEBUG] NODE_ENV:', process.env.NODE_ENV);
+
 // Connect to database
 connectDB();
 
