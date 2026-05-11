@@ -8,8 +8,10 @@ const errorHandler = require('./middleware/error');
 // Load env vars
 dotenv.config();
 
-console.log('[DEBUG] MONGO_URI Status:', process.env.MONGO_URI ? 'DEFINED' : 'UNDEFINED');
-console.log('[DEBUG] NODE_ENV:', process.env.NODE_ENV);
+console.log('==========================================');
+console.log('VERCEL DEBUG: NODE_ENV =', process.env.NODE_ENV);
+console.log('VERCEL DEBUG: MONGO_URI =', process.env.MONGO_URI ? 'FOUND (Length: ' + process.env.MONGO_URI.length + ')' : 'NOT FOUND');
+console.log('==========================================');
 
 // Connect to database
 connectDB();
@@ -33,12 +35,12 @@ app.use(cookieParser());
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
+  'http://127.0.0.1:5173',
   'https://ethara.pages.dev'
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
       callback(null, true);
@@ -48,7 +50,8 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
 }));
 
 // Root route
