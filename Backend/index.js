@@ -25,13 +25,7 @@ const users = require('./routes/users');
 
 const app = express();
 
-// Body parser
-app.use(express.json());
-
-// Cookie parser
-app.use(cookieParser());
-
-// Enable CORS
+// 1. Enable CORS (Must be at the very top)
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
@@ -41,8 +35,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -53,6 +46,14 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200
 }));
+
+// 2. Body parser
+app.use(express.json());
+
+// 3. Cookie parser
+app.use(cookieParser());
+
+// CORS moved to top
 
 // Root route
 app.get('/', (req, res) => res.send('Welcome to Ethara API'));
