@@ -72,14 +72,14 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}
+// For Railway and local dev, we need to listen on a port
+// Vercel will ignore this and use the exported app
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-    console.log(`Error: ${err.message}`);
-    process.exit(1);
+  console.log(`Error: ${err.message}`);
+  process.exit(1);
 });
 
 module.exports = app;
