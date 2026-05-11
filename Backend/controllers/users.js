@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const logAudit = require('../middleware/audit');
 
 // @desc    Get all users
 // @route   GET /api/v1/users
@@ -44,6 +45,9 @@ exports.createUser = async (req, res, next) => {
     try {
         const user = await User.create(req.body);
 
+        // Log activity
+        await logAudit(req, 'CREATE_USER_ADMIN', 'User', user._id, { email: user.email, role: user.role });
+
         res.status(201).json({
             success: true,
             data: user
@@ -63,6 +67,9 @@ exports.updateUser = async (req, res, next) => {
             runValidators: true
         });
 
+        // Log activity
+        await logAudit(req, 'UPDATE_USER_ADMIN', 'User', user._id, { email: user.email, updates: req.body });
+
         res.status(200).json({
             success: true,
             data: user
@@ -78,6 +85,9 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
     try {
         await User.findByIdAndDelete(req.params.id);
+
+        // Log activity
+        await logAudit(req, 'DELETE_USER_ADMIN', 'User', req.params.id);
 
         res.status(200).json({
             success: true,

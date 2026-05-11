@@ -7,6 +7,7 @@ import {
   Users,
   FolderKanban,
   CheckSquare,
+  ClipboardList,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -49,6 +50,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: "Users",
       url: "/users",
       icon: Users,
+    }, {
+      title: "Audit Logs",
+      url: "/audit-logs",
+      icon: ClipboardList,
     }] : []),
     {
       title: "Profile",

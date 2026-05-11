@@ -1,4 +1,5 @@
 const Project = require('../models/Project');
+const logAudit = require('../middleware/audit');
 
 // @desc    Get all projects (with pagination)
 // @route   GET /api/v1/projects
@@ -62,6 +63,10 @@ exports.createProject = async (req, res, next) => {
         // Add user to req.body
         req.body.owner = req.user.id;
         const project = await Project.create(req.body);
+
+        // Log activity
+        await logAudit(req, 'CREATE_PROJECT', 'Project', project._id, { name: project.name });
+
         res.status(201).json({ success: true, data: project });
     } catch (err) {
         res.status(400).json({ success: false, error: err.message });
@@ -81,6 +86,10 @@ exports.updateProject = async (req, res, next) => {
             new: true,
             runValidators: true
         });
+
+        // Log activity
+        await logAudit(req, 'UPDATE_PROJECT', 'Project', project._id, { name: project.name, updates: req.body });
+
         res.status(200).json({ success: true, data: project });
     } catch (err) {
         res.status(400).json({ success: false, error: err.message });
@@ -97,6 +106,10 @@ exports.deleteProject = async (req, res, next) => {
             return res.status(404).json({ success: false, error: 'Project not found' });
         }
         await project.deleteOne();
+
+        // Log activity
+        await logAudit(req, 'DELETE_PROJECT', 'Project', req.params.id, { name: project.name });
+
         res.status(200).json({ success: true, data: {} });
     } catch (err) {
         res.status(400).json({ success: false, error: err.message });

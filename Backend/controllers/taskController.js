@@ -1,5 +1,6 @@
 const Task = require('../models/Task');
 const Project = require('../models/Project');
+const logAudit = require('../middleware/audit');
 
 // @desc    Get all tasks (with pagination)
 // @route   GET /api/v1/tasks
@@ -66,6 +67,10 @@ exports.getTask = async (req, res, next) => {
 exports.addTask = async (req, res, next) => {
     try {
         const task = await Task.create(req.body);
+
+        // Log activity
+        await logAudit(req, 'CREATE_TASK', 'Task', task._id, { title: task.title, projectId: task.project });
+
         res.status(201).json({ success: true, data: task });
     } catch (err) {
         res.status(400).json({ success: false, error: err.message });
@@ -85,6 +90,10 @@ exports.updateTask = async (req, res, next) => {
             new: true,
             runValidators: true
         });
+
+        // Log activity
+        await logAudit(req, 'UPDATE_TASK', 'Task', task._id, { title: task.title, updates: req.body });
+
         res.status(200).json({ success: true, data: task });
     } catch (err) {
         res.status(400).json({ success: false, error: err.message });
@@ -101,6 +110,10 @@ exports.deleteTask = async (req, res, next) => {
             return res.status(404).json({ success: false, error: 'Task not found' });
         }
         await task.deleteOne();
+
+        // Log activity
+        await logAudit(req, 'DELETE_TASK', 'Task', req.params.id, { title: task.title });
+
         res.status(200).json({ success: true, data: {} });
     } catch (err) {
         res.status(400).json({ success: false, error: err.message });

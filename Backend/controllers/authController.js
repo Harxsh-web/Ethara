@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const logAudit = require('../middleware/audit');
 
 // @desc    Register user
 // @route   POST /api/v1/auth/register
@@ -15,6 +16,10 @@ exports.register = async (req, res, next) => {
             password,
             role
         });
+
+        // Log activity
+        req.user = user;
+        await logAudit(req, 'USER_REGISTERED', 'User', user._id, { email: user.email, name: user.name });
 
         sendTokenResponse(user, 201, res);
     } catch (err) {
@@ -48,6 +53,10 @@ exports.login = async (req, res, next) => {
             return res.status(401).json({ success: false, error: 'Invalid credentials' });
         }
 
+        // Log activity
+        req.user = user; // Set req.user for logAudit to find user ID
+        await logAudit(req, 'USER_LOGIN', 'User', user._id, { email: user.email });
+
         sendTokenResponse(user, 200, res);
     } catch (err) {
         next(err);
@@ -64,6 +73,29 @@ exports.getMe = async (req, res, next) => {
         res.status(200).json({
             success: true,
             data: user
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Log user out / clear cookie
+// @route   GET /api/v1/auth/logout
+// @access  Private
+exports.logout = async (req, res, next) => {
+    try {
+        if (req.user) {
+            await logAudit(req, 'USER_LOGOUT', 'User', req.user.id);
+        }
+
+        res.cookie('token', 'none', {
+            expires: new Date(Date.now() + 10 * 1000),
+            httpOnly: true
+        });
+
+        res.status(200).json({
+            success: true,
+            data: {}
         });
     } catch (err) {
         next(err);

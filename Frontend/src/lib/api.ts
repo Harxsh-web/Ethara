@@ -18,7 +18,7 @@ export const apiCall = async (endpoint: string, method: string, body?: any) => {
   }
   
   // Log for debugging (user can see in browser)
-  console.log(`API Call: ${method} ${url} | Token Present: ${!!token} | FormData: ${isFormData}`);
+  // console.log(`API Call: ${method} ${url} | Token Present: ${!!token} | FormData: ${isFormData}`);
 
   const response = await fetch(url, {
     method,

@@ -12,6 +12,7 @@ import NotFound from "@/pages/NotFound";
 import UserProfile from "@/pages/UserProfile/UserProfile";
 import ProjectManagement from "@/pages/Projects/ProjectManagement";
 import TaskManagement from "@/pages/Tasks/TaskManagement";
+import AuditLogs from "@/pages/AuditLogs/AuditLogs";
 
 function LayoutWrapper() {
   return (
@@ -62,6 +63,10 @@ export const appRoutes: RouteObject[] = [
       {
         path: "users/:id",
         element: <UserDetail />,
+      },
+      {
+        path: "audit-logs",
+        element: <AuditLogs />,
       },
 
       {

@@ -22,6 +22,7 @@ const projects = require('./routes/projects');
 const tasks = require('./routes/tasks');
 const dashboard = require('./routes/dashboard');
 const users = require('./routes/users');
+const auditLogs = require('./routes/auditLogs');
 
 const app = express();
 
@@ -67,14 +68,20 @@ app.use('/api/v1/projects', projects);
 app.use('/api/v1/tasks', tasks);
 app.use('/api/v1/dashboard', dashboard);
 app.use('/api/v1/users', users);
+app.use('/api/v1/audit-logs', auditLogs);
 
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
 // For Railway and local dev, we need to listen on a port
-// Vercel will ignore this and use the exported app
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// We use 0.0.0.0 to ensure it's reachable on the network
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`==========================================`);
+  console.log(`Server is LIVE and listening on port ${PORT}`);
+  console.log(`Accepting requests on 0.0.0.0:${PORT}`);
+  console.log(`==========================================`);
+});
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
